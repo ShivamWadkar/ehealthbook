@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class DesignmartAuthenticationServiceApplication {
+public class EHealthBookAuthenticationServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(DesignmartAuthenticationServiceApplication.class, args);
+		SpringApplication.run(EHealthBookAuthenticationServiceApplication.class, args);
 	}
 
 }

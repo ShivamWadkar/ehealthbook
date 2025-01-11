@@ -7,13 +7,13 @@ import com.ehealthbook.authentication.entity.User;
 import com.ehealthbook.authentication.exception.ApiException;
 import com.ehealthbook.authentication.repository.RoleRepository;
 import com.ehealthbook.authentication.repository.UserRepository;
+import com.ehealthbook.authentication.security.CustomUserDetails;
 import com.ehealthbook.authentication.security.JwtUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,9 +40,9 @@ public class AuthService {
             throw new ApiException("Incorrect username or password", HttpStatus.UNAUTHORIZED);
         }
 
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(request.getUsername());
+        CustomUserDetails userDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(request.getUsername());
 
-        return jwtUtil.generateToken(userDetails.getUsername());
+        return jwtUtil.generateToken(userDetails.getId(), userDetails.getUsername(), userDetails.getRole());
     }
 
     public String registerUser(SignupRequest signupRequest) {

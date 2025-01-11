@@ -2,6 +2,8 @@ package com.ehealthbook.authentication.security;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.UUID;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -18,9 +20,11 @@ public class JwtUtil {
     private long jwtExpiration; // JWT expiration time in milliseconds
 
     // Generate JWT Token
-    public String generateToken(String username) {
+    public String generateToken(UUID userId, String username, String role) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(String.valueOf(userId)) // Set "sub" claim (userId in this case)
+                .claim("username", username) // Add custom "username" claim
+                .claim("roles", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(SignatureAlgorithm.HS256, secretKey.getBytes(StandardCharsets.UTF_8))
@@ -28,7 +32,7 @@ public class JwtUtil {
     }
 
     // Extract username from JWT Token
-    public String extractUsername(String token) {
+    public String extractUserId(String token) {
         return extractClaims(token).getSubject();
     }
 
@@ -47,7 +51,7 @@ public class JwtUtil {
     }
 
     // Validate JWT Token
-    public boolean validateToken(String token, String username) {
-        return (username.equals(extractUsername(token)) && !isTokenExpired(token));
+    public boolean validateToken(String token, UUID userId) {
+        return (userId.equals(UUID.fromString(extractUserId(token))) && !isTokenExpired(token));
     }
 }
