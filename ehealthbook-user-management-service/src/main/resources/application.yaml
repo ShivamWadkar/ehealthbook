@@ -1,0 +1,51 @@
+# Server Configuration
+server:
+  port: 8082
+
+# Spring Data JPA (PostgreSQL) Configuration
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/user_db
+    username: postgres
+    password: shiv@123
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none            # Disable automatic schema updates; Flyway will handle migrations
+    show-sql: true              # Logs SQL queries for debugging purposes
+
+  # Flyway Configuration
+  flyway:
+    enabled: true               # Ensure Flyway is enabled
+    locations: classpath:db/migration  # Location of migration scripts
+    baseline-on-migrate: true   # Baseline existing database if starting Flyway for the first time
+    clean-disabled: false       # Allow cleaning the database for development/testing
+    validate-on-migrate: true   # Validate scripts before applying
+
+  # Spring Security Configuration
+  security:
+    user:
+      name: admin               # Default admin username (optional)
+      password: admin123         # Default admin password (optional)
+
+# Hibernate Configuration
+hibernate:
+  dialect: org.hibernate.dialect.PostgreSQLDialect
+  hbm2ddl:
+    auto: none                  # Delegate schema management to Flyway
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    org.hibernate.SQL: DEBUG      # Logs all SQL queries
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # Logs the binding of values to parameters
+
+# CORS Configuration (if needed for frontend communication)
+cors:
+  allowed-origins: "*"
+  allowed-methods: "GET, POST, PUT, DELETE"
+  allowed-headers: "Authorization, Content-Type"
+  exposed-headers: "Authorization"
+  allow-credentials: true
