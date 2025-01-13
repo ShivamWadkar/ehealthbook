@@ -17,6 +17,10 @@ public class PatientService {
     private PatientRepository patientRepository;
 
     public PatientProfileDTO createProfile(String userId, PatientProfileDTO patientProfileDTO) {
+        var profile = patientRepository.findByUserId(UUID.fromString(userId));
+        if (profile.isPresent()) {
+            throw new ApiException("User already exists", HttpStatus.BAD_REQUEST);
+        }
         PatientProfile patientProfile = new PatientProfile();
         patientProfile.setUserId(UUID.fromString(userId));
         patientProfile.setFirstName(patientProfileDTO.getFirstName());
@@ -40,16 +44,16 @@ public class PatientService {
     public PatientProfileDTO getProfile(String userId) {
         var patientProfile = patientRepository.findByUserId(UUID.fromString(userId));
         if (patientProfile.isEmpty()) {
-            throw new ApiException("Invalid user", HttpStatus.NOT_FOUND);
+            throw new ApiException("User not found", HttpStatus.NOT_FOUND);
         }
-        PatientProfile fetchProfile = patientProfile.get();
+        PatientProfile fetchedProfile = patientProfile.get();
         return PatientProfileDTO.builder()
-                .firstName(fetchProfile.getFirstName())
-                .lastName(fetchProfile.getLastName())
-                .gender(fetchProfile.getGender())
-                .contactNumber(fetchProfile.getContactNumber())
-                .dateOfBirth(fetchProfile.getDateOfBirth())
-                .bloodGroup(fetchProfile.getBloodGroup())
+                .firstName(fetchedProfile.getFirstName())
+                .lastName(fetchedProfile.getLastName())
+                .gender(fetchedProfile.getGender())
+                .contactNumber(fetchedProfile.getContactNumber())
+                .dateOfBirth(fetchedProfile.getDateOfBirth())
+                .bloodGroup(fetchedProfile.getBloodGroup())
                 .build();
     }
 }

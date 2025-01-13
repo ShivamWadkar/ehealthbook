@@ -1,6 +1,6 @@
 package com.ehealthbook.usermanagement.repository;
 
-import com.ehealthbook.usermanagement.entity.PatientProfile;
+import com.ehealthbook.usermanagement.entity.DoctorProfile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,6 +8,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface PatientRepository extends JpaRepository<PatientProfile, Long> {
-    Optional<PatientProfile> findByUserId(UUID userId);
+public interface DoctorRepository extends JpaRepository<DoctorProfile, Long> {
+    Optional<DoctorProfile> findByUserId(UUID uuid);
 }
