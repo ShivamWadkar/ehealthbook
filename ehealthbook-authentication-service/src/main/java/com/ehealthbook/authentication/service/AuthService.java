@@ -34,22 +34,18 @@ public class AuthService {
     public String validateUser(AuthenticationRequest request) throws Exception {
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
             );
         } catch (AuthenticationException e) {
             throw new ApiException("Incorrect username or password", HttpStatus.UNAUTHORIZED);
         }
 
-        CustomUserDetails userDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(request.getUsername());
+        CustomUserDetails userDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(request.getEmail());
 
         return jwtUtil.generateToken(userDetails.getId(), userDetails.getUsername(), userDetails.getRole());
     }
 
     public String registerUser(SignupRequest signupRequest) {
-        if (userRepository.existsByUsername(signupRequest.getUsername())) {
-            throw new IllegalArgumentException("Username is already taken");
-        }
-
         if (userRepository.existsByEmail(signupRequest.getEmail())) {
             throw new IllegalArgumentException("Email is already taken");
         }
@@ -60,9 +56,8 @@ public class AuthService {
 
         // Create the user and set the role
         User user = User.builder()
-                .username(signupRequest.getUsername())
-                .password(new BCryptPasswordEncoder().encode(signupRequest.getPassword()))
                 .email(signupRequest.getEmail())
+                .password(new BCryptPasswordEncoder().encode(signupRequest.getPassword()))
                 .role(role)
                 .build();
 

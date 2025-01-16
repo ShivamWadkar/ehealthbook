@@ -9,14 +9,18 @@ spring:
     username: postgres
     password: shiv@123
     driver-class-name: org.postgresql.Driver
+    schemas: ehealthbook
 
   jpa:
     hibernate:
       ddl-auto: none            # Disable automatic schema updates; Flyway will handle migrations
     show-sql: true              # Logs SQL queries for debugging purposes
+    properties:
+      hibernate.default_schema: ehealthbook
 
   # Flyway Configuration
   flyway:
+    schemas: ehealthbook
     enabled: true               # Ensure Flyway is enabled
     locations: classpath:db/migration  # Location of migration scripts
     baseline-on-migrate: true   # Baseline existing database if starting Flyway for the first time

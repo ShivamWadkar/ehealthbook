@@ -19,8 +19,8 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@Valid @RequestBody AuthenticationRequest request) throws Exception {
-        String userName = authService.validateUser(request);
-        return ResponseEntity.ok(userName);
+        String jwtToken = authService.validateUser(request);
+        return ResponseEntity.ok(jwtToken);
     }
 
     @PostMapping("/signup")

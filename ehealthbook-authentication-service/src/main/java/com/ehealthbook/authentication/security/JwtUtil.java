@@ -20,10 +20,10 @@ public class JwtUtil {
     private long jwtExpiration; // JWT expiration time in milliseconds
 
     // Generate JWT Token
-    public String generateToken(UUID userId, String username, String role) {
+    public String generateToken(UUID userId, String email, String role) {
         return Jwts.builder()
                 .setSubject(String.valueOf(userId)) // Set "sub" claim (userId in this case)
-                .claim("username", username) // Add custom "username" claim
+                .claim("email", email) // Add custom "username" claim
                 .claim("roles", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))

@@ -8,13 +8,13 @@ spring:
         - id: authentication-service
           uri: http://localhost:8081
           predicates:
-            - Path=/gateway/api/auth/**
+            - Path=/ehealthbook/api/auth/**
           filters:
             - StripPrefix=1
         - id: user-management-service
           uri: http://localhost:8082
           predicates:
-            - Path=/gateway/api/user/**
+            - Path=/ehealthbook/api/user/**
           filters:
             - StripPrefix=1
 jwt:

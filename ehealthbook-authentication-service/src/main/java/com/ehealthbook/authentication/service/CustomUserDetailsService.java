@@ -21,8 +21,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     private UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(userName)
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         // Create authorities based on roles
@@ -32,7 +32,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         // Return CustomUserDetails with UUID
         return new CustomUserDetails(
                 user.getId(),                  // UUID from the database
-                user.getUsername(),
+                user.getEmail(),
                 user.getPassword(),
                 user.getRole().getName(),
                 authorities

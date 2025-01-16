@@ -14,8 +14,8 @@ public class CustomUserDetails extends org.springframework.security.core.userdet
 
     private final String role;
 
-    public CustomUserDetails(UUID id, String username, String password, String role, Collection<? extends GrantedAuthority> authorities) {
-        super(username, password, authorities);
+    public CustomUserDetails(UUID id, String email, String password, String role, Collection<? extends GrantedAuthority> authorities) {
+        super(email, password, authorities);
         this.id = id;
         this.role = role;
     }
