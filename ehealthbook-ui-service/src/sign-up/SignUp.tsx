@@ -16,6 +16,11 @@ import { styled } from '@mui/material/styles';
 import AppTheme from '../shared-theme/AppTheme.tsx';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from './components/CustomIcons.tsx';
 import { Radio, RadioGroup } from '@mui/material';
+import { connect, ConnectedProps } from 'react-redux';
+import { signUpAction } from './redux/actionCreator.ts';
+import { SignUpRequest } from './services/signUpService.ts';
+import { SignUpState } from './redux/signUpSlice.ts';
+import { RootState } from '../store/index.ts';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -55,14 +60,16 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
     backgroundRepeat: 'no-repeat',
     ...theme.applyStyles('dark', {
       backgroundImage:
-        'radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))',
+        'radial-gradient(at 50% 50%, hsla(210, 86.30%, 25.70%, 0.50), hsl(220, 30%, 5%))',
     }),
   },
 }));
 
-export default function SignUp(props: { disableCustomTheme?: boolean }) {
+const SignUp = (props: PropsFromRedux): React.JSX.Element => {
+  const [email, setEmail] = React.useState('');
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
+  const [password, setPassword] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [profileType, setProfileType] = React.useState('');
@@ -70,12 +77,9 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
   const [profileTypeErrorMessage, setProfileTypeErrorMessage] = React.useState('');
 
   const validateInputs = () => {
-    const email = document.getElementById('email') as HTMLInputElement;
-    const password = document.getElementById('password') as HTMLInputElement;
-
     let isValid = true;
 
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
       setEmailError(true);
       setEmailErrorMessage('Please enter a valid email address.');
       isValid = false;
@@ -84,7 +88,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
       setEmailErrorMessage('');
     }
 
-    if (!password.value || password.value.length < 6) {
+    if (!password || password.length < 6) {
       setPasswordError(true);
       setPasswordErrorMessage('Password must be at least 6 characters long.');
       isValid = false;
@@ -93,7 +97,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
       setPasswordErrorMessage('');
     }
 
-    if (!profileType || profileType.length < 6) {
+    if (!profileType) {
       setProfileTypeError(true);
       setProfileTypeErrorMessage('Please select your profile type as Patient / Doctor.');
       isValid = false;
@@ -116,6 +120,9 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
       password: data.get('password'),
       profileType
     });
+    const userData = {email: email, password: password, role: profileType}
+    console.log('Email: ', {email}, 'Password: ', {password}, 'Role: ', {profileType})
+    props.signUpAction(userData)
   };
 
   return (
@@ -149,6 +156,8 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                 error={emailError}
                 helperText={emailErrorMessage}
                 color={emailError ? 'error' : 'primary'}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </FormControl>
             <FormControl>
@@ -165,6 +174,8 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                 error={passwordError}
                 helperText={passwordErrorMessage}
                 color={passwordError ? 'error' : 'primary'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </FormControl>
             <FormControl>
@@ -180,8 +191,8 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                   }
                 }}
               >
-                <FormControlLabel value="Patient" control={<Radio />} label="Patient" />
-                <FormControlLabel value="Doctor" control={<Radio />} label="Doctor" />
+                <FormControlLabel value="PATIENT" control={<Radio />} label="Patient" />
+                <FormControlLabel value="DOCTOR" control={<Radio />} label="Doctor" />
               </RadioGroup>
               {profileTypeError && (
                 <Typography color="error" variant="caption" sx={{ mt: 1 }}>
@@ -238,3 +249,24 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
     </AppTheme>
   );
 }
+
+interface DispatchToProps {
+  signUpAction: (signUpRequest: SignUpRequest) => void
+}
+
+const mapDispatchToProps = (dispatch: any) : DispatchToProps => ({
+  signUpAction: (signUpRequest: SignUpRequest) => dispatch(signUpAction(signUpRequest))
+})
+
+interface StateToProps {
+  signUp: SignUpState
+}
+
+const mapStateToProps = (state: RootState): StateToProps => ({
+  signUp: state.signUp
+})
+
+const connector = connect(mapStateToProps, mapDispatchToProps)
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+export default connector(SignUp)
