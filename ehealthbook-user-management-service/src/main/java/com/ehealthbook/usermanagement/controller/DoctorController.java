@@ -1,5 +1,6 @@
 package com.ehealthbook.usermanagement.controller;
 
+import com.ehealthbook.usermanagement.dto.ApiResponse;
 import com.ehealthbook.usermanagement.dto.DoctorProfileDTO;
 import com.ehealthbook.usermanagement.service.DoctorService;
 import jakarta.validation.Valid;
@@ -23,15 +24,15 @@ public class DoctorController {
     private DoctorService doctorService;
 
     @PostMapping
-    public ResponseEntity<DoctorProfileDTO> createProfile(@RequestHeader("X-User-Id") String userId,
+    public ResponseEntity<ApiResponse<DoctorProfileDTO>> createProfile(@RequestHeader("X-User-Id") String userId,
                                                           @RequestHeader("X-User-Role") String role,
                                                           @Valid @RequestBody DoctorProfileDTO doctorProfileDTO) {
-        return new ResponseEntity<>(doctorService.createProfile(userId, doctorProfileDTO), HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created(doctorService.createProfile(userId, doctorProfileDTO)));
     }
 
     @GetMapping
-    public ResponseEntity<DoctorProfileDTO> getProfile(@RequestHeader("X-User-Id") String userId,
+    public ResponseEntity<ApiResponse<DoctorProfileDTO>> getProfile(@RequestHeader("X-User-Id") String userId,
                                                         @RequestHeader("X-User-Role") String role) {
-        return new ResponseEntity<>(doctorService.getProfile(userId), HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(doctorService.getProfile(userId)));
     }
 }
