@@ -39,7 +39,7 @@ export default function AppAppBar() {
   };
 
   const goToSignUp = () => {
-    navigate('sign-up')
+    navigate('/sign-up')
   }
 
   const handleSitemarkClick = () => {

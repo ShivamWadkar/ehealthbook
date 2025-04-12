@@ -19,6 +19,7 @@ import { SignInState } from '../redux/signInSlice.ts';
 import { RootState } from '../../store/index.ts';
 import { connect, ConnectedProps } from 'react-redux';
 import ApiFeedback from '../../components/ApiFeedbackProps.tsx';
+import { Link as RouterLink } from 'react-router-dom'
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -177,11 +178,12 @@ const SignInCard = (props: PropsFromRedux): React.JSX.Element => {
         <Typography sx={{ textAlign: 'center' }}>
           Don&apos;t have an account?{' '}
           <span>
-            <Link
-              href="/material-ui/getting-started/templates/sign-in/"
-              variant="body2"
-              sx={{ alignSelf: 'center' }}
-            >
+          <Link
+            component={RouterLink}
+            to="/sign-up"
+            variant="body2"
+            sx={{ alignSelf: 'center' }}
+          >
               Sign up
             </Link>
           </span>
@@ -212,6 +214,7 @@ const SignInCard = (props: PropsFromRedux): React.JSX.Element => {
             httpStatus={props.signIn.httpStatus}
             error={props.signIn.error}
             onClose={disableShowFeedback}
+            routeTo='/dashboard'
           />
         }
       </Box>

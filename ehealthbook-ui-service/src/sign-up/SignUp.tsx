@@ -15,13 +15,14 @@ import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import AppTheme from '../shared-theme/AppTheme.tsx';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from './components/CustomIcons.tsx';
-import { CircularProgress, Radio, RadioGroup } from '@mui/material';
+import { Radio, RadioGroup } from '@mui/material';
 import { connect, ConnectedProps } from 'react-redux';
 import { signUpAction } from './redux/actionCreator.ts';
 import { SignUpRequest } from './services/signUpService.ts';
 import { SignUpState } from './redux/signUpSlice.ts';
 import { RootState } from '../store/index.ts';
 import ApiFeedback from '../components/ApiFeedbackProps.tsx';
+import { Link as RouterLink } from 'react-router-dom'
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -236,7 +237,8 @@ const SignUp = (props: PropsFromRedux): React.JSX.Element => {
             <Typography sx={{ textAlign: 'center' }}>
               Already have an account?{' '}
               <Link
-                href="/material-ui/getting-started/templates/sign-in/"
+                component={RouterLink}
+                to="/sign-in"
                 variant="body2"
                 sx={{ alignSelf: 'center' }}
               >
