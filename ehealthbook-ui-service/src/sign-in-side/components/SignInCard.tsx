@@ -13,6 +13,12 @@ import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import ForgotPassword from './ForgotPassword.tsx';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from './CustomIcons.tsx';
+import { SignInRequest } from '../services/signInService.ts';
+import { signInAction } from '../redux/actionCreator.ts';
+import { SignInState } from '../redux/signInSlice.ts';
+import { RootState } from '../../store/index.ts';
+import { connect, ConnectedProps } from 'react-redux';
+import ApiFeedback from '../../components/ApiFeedbackProps.tsx';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -32,12 +38,13 @@ const Card = styled(MuiCard)(({ theme }) => ({
   }),
 }));
 
-export default function SignInCard() {
+const SignInCard = (props: PropsFromRedux): React.JSX.Element => {
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [open, setOpen] = React.useState(false);
+  const [showFeedback, setShowFeedback] = React.useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -48,15 +55,21 @@ export default function SignInCard() {
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     if (emailError || passwordError) {
-      event.preventDefault();
       return;
     }
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    const signInRequest = (data: FormData): SignInRequest => {
+      const email = data.get('email') as string;
+      const password = data.get('password') as string;
+      return {
+        email,
+        password,
+      };
+    }
+    props.signInAction(signInRequest(data))
+    setShowFeedback(true);
   };
 
   const validateInputs = () => {
@@ -85,6 +98,10 @@ export default function SignInCard() {
 
     return isValid;
   };
+
+  const disableShowFeedback = () => {
+    setShowFeedback(false);
+  }
 
   return (
     <Card variant="outlined">
@@ -188,7 +205,37 @@ export default function SignInCard() {
         >
           Sign in with Facebook
         </Button>
+        {
+          showFeedback &&
+          <ApiFeedback
+            isLoading={props.signIn.isLoading}
+            httpStatus={props.signIn.httpStatus}
+            error={props.signIn.error}
+            onClose={disableShowFeedback}
+          />
+        }
       </Box>
     </Card>
   );
 }
+
+interface DispatchToProps {
+  signInAction: (signInRequest: SignInRequest) => void
+}
+
+const mapDispatchToProps = (dispatch: any) : DispatchToProps => ({
+  signInAction: (signInRequest: SignInRequest) => dispatch(signInAction(signInRequest))
+})
+
+interface StateToProps {
+  signIn: SignInState
+}
+
+const mapStateToProps = (state: RootState): StateToProps => ({
+  signIn: state.signIn
+})
+
+const connector = connect(mapStateToProps, mapDispatchToProps)
+type PropsFromRedux = ConnectedProps<typeof connector>
+
+export default connector(SignInCard)

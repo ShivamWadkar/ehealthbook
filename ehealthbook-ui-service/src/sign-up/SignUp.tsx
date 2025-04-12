@@ -15,12 +15,13 @@ import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import AppTheme from '../shared-theme/AppTheme.tsx';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from './components/CustomIcons.tsx';
-import { Radio, RadioGroup } from '@mui/material';
+import { CircularProgress, Radio, RadioGroup } from '@mui/material';
 import { connect, ConnectedProps } from 'react-redux';
 import { signUpAction } from './redux/actionCreator.ts';
 import { SignUpRequest } from './services/signUpService.ts';
 import { SignUpState } from './redux/signUpSlice.ts';
 import { RootState } from '../store/index.ts';
+import ApiFeedback from '../components/ApiFeedbackProps.tsx';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -75,10 +76,10 @@ const SignUp = (props: PropsFromRedux): React.JSX.Element => {
   const [profileType, setProfileType] = React.useState('');
   const [profileTypeError, setProfileTypeError] = React.useState(false);
   const [profileTypeErrorMessage, setProfileTypeErrorMessage] = React.useState('');
+  const [showFeedback, setShowFeedback] = React.useState(false);
 
   const validateInputs = () => {
     let isValid = true;
-
     if (!email || !/\S+@\S+\.\S+/.test(email)) {
       setEmailError(true);
       setEmailErrorMessage('Please enter a valid email address.');
@@ -88,9 +89,9 @@ const SignUp = (props: PropsFromRedux): React.JSX.Element => {
       setEmailErrorMessage('');
     }
 
-    if (!password || password.length < 6) {
+    if (!password || password.length < 8) {
       setPasswordError(true);
-      setPasswordErrorMessage('Password must be at least 6 characters long.');
+      setPasswordErrorMessage('Password must be at least 8 characters long.');
       isValid = false;
     } else {
       setPasswordError(false);
@@ -114,16 +115,14 @@ const SignUp = (props: PropsFromRedux): React.JSX.Element => {
     if (emailError || passwordError || profileTypeError) {
       return;
     }
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-      profileType
-    });
     const userData = {email: email, password: password, role: profileType}
-    console.log('Email: ', {email}, 'Password: ', {password}, 'Role: ', {profileType})
     props.signUpAction(userData)
+    setShowFeedback(true);
   };
+
+  const disableShowFeedback = () => {
+    setShowFeedback(false);
+  }
 
   return (
     <AppTheme {...props}>
@@ -209,6 +208,7 @@ const SignUp = (props: PropsFromRedux): React.JSX.Element => {
               fullWidth
               variant="contained"
               onClick={validateInputs}
+              disabled={props.signUp.isLoading}
             >
               Sign up
             </Button>
@@ -243,6 +243,16 @@ const SignUp = (props: PropsFromRedux): React.JSX.Element => {
                 Sign in
               </Link>
             </Typography>
+            {
+              showFeedback &&
+              <ApiFeedback
+                isLoading={props.signUp.isLoading}
+                httpStatus={props.signUp.httpStatus}
+                error={props.signUp.error}
+                onClose={disableShowFeedback}
+                routeTo='/sign-in'
+              />
+            }
           </Box>
         </Card>
       </SignUpContainer>

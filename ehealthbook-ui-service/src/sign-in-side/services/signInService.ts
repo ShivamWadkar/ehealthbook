@@ -1,10 +1,9 @@
 import { z } from 'zod';
 import interceptedAxios from '../../utils/interceptedAxios.ts';
 
-export interface SignUpRequest {
+export interface SignInRequest {
   email: string;
   password: string;
-  role: string;
 }
 
 const ZApiResponse = z.object({
@@ -15,12 +14,12 @@ const ZApiResponse = z.object({
 
 export type ApiResponse = z.infer<typeof ZApiResponse>;
 
-export async function signUpUser(
-  signUpRequest: SignUpRequest,
+export async function signInUser(
+  signUpRequest: SignInRequest,
   onSuccess: (successResponse: ApiResponse) => any,
   onFailure: (errorMessage: string, http_status: number) => any
 ): Promise<void> {
-  const url = '/api/auth/signup';
+  const url = '/api/auth/login';
   interceptedAxios
     .post(url, signUpRequest, {timeout: 15000})
     .then((response) => {
@@ -29,7 +28,8 @@ export async function signUpUser(
       console.log("Parsed response: ", parseResponse)
       if (parseResponse.success) {
         onSuccess(parseResponse.data)
-        // window.location.href = 'sign-in'
+        const token = parseResponse.data.data
+        document.cookie = `jwtToken=${token}; Secure; HttpOnly`
       } else {
         onFailure('Error occured while processing response', response.status)
       }

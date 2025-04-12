@@ -1,24 +1,24 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { ApiResponse } from '../services/signUpService';
+import { ApiResponse } from '../services/signInService';
 
-export interface SignUpState {
+export interface SignInState {
   isLoading: boolean
   error: string | null
   httpStatus: number | null | undefined
 }
 // Initial state
-const initialState: SignUpState = {
+const initialState: SignInState = {
   isLoading: false,
   error: null,
   httpStatus: null
 };
 
 // Create the slice
-const signUpSlice = createSlice({
-  name: 'signUp',
+const signInSlice = createSlice({
+  name: 'signIn',
   initialState,
   reducers: {
-    signUpLoadingAction: (state) => {
+    signInLoadingAction: (state) => {
       return {
         ...state,
         isLoading: true,
@@ -26,7 +26,7 @@ const signUpSlice = createSlice({
         httpStatus: 0
       }
     },
-    signUpUpdateAction: (state, action: PayloadAction<{data: ApiResponse}>) => {
+    signInUpdateAction: (state, action: PayloadAction<{data: ApiResponse}>) => {
       return {
         ...state,
         isLoading: false,
@@ -34,7 +34,7 @@ const signUpSlice = createSlice({
         httpStatus: action.payload.data.httpStatus
       }
     },
-    signUpErrorAction: (state, action: PayloadAction<{errorMessage: string, httpStatus: number | undefined}>) => {
+    signInErrorAction: (state, action: PayloadAction<{errorMessage: string, httpStatus: number | undefined}>) => {
       return {
         ...state,
         isLoading: false,
@@ -46,9 +46,9 @@ const signUpSlice = createSlice({
 });
 
 export const {
-  signUpLoadingAction,
-  signUpUpdateAction,
-  signUpErrorAction
-} = signUpSlice.actions
+  signInLoadingAction,
+  signInUpdateAction,
+  signInErrorAction
+} = signInSlice.actions
 
-export default signUpSlice.reducer;
+export default signInSlice.reducer;
